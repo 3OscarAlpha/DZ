@@ -5,4 +5,4 @@ for i in range(0, len(L)):
             a = L[j]
             L[j] = L[j+1]
             L[j+1] = a
-print(L)
+print("L = ", L)
