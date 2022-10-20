@@ -9,7 +9,7 @@
 #Все столбцы сверху должны быть подписаны. Данные должны быть отсортированы в порядке возрастания даты наблюдения.
 
 import numpy as np #сначала терминал - pip install имя пакета.
-
+import scipy
 with open ('task2_data.dat', 'r') as f:  #здесь заменяем опечатки
   old_data = f.read()
 new_data = old_data.replace('su hor', 'SU_Hor')
@@ -32,6 +32,7 @@ for line in line_table:
     column_filt.append(line.split("    ")[2])
 del column_obj[0]
 del column_filt[0]
+column_filt = [x.strip(' ') for x in column_filt] #убрала пробелы вида '  V'
 f.close()
 print('objects:', column_obj)
 print('filters:', column_filt)
@@ -55,10 +56,10 @@ print(f"последний элемент SU_Hor находится на {k} п�
 
 su_hor_filters = list(set(column_filt[:k])) #избавляемся от дубликатов более простым сп. сет - пер в набор, лист - в список
 rz_lyr_filters = list(set(column_filt[k:]))
-
-print(su_hor_filters)
-print(rz_lyr_filters)
+print(su_hor_filters, "в этих фильтрах su_hor")
+print(rz_lyr_filters, "в этих фильтрах rz_lyr")
 
 # catalog = list(zip(su_hor_filters, rz_lyr_filters))
 # print(catalog) КАКАЯ-ТО МУТЬ
-
+catalog = [column_obj_norm, [su_hor_filters, rz_lyr_filters]]
+print(catalog)
