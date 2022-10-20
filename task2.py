@@ -54,8 +54,11 @@ for w in range (0, len(column_obj)):
         k = k + 1
 print(f"последний элемент SU_Hor находится на {k} позиции. Начиная с {k+1} идут RZ_Lyr")
 
-su_hor_filters = list(set(column_filt[:k])) #избавляемся от дубликатов более простым сп. сет - пер в набор, лист - в список
-rz_lyr_filters = list(set(column_filt[k:]))
+su_hor_filters = list(set(column_filt[:k]))#избавляемся от дубликатов более простым сп. сет - пер в набор, лист - в список
+rz_lyr_filters = sorted(list(set(column_filt[k:])), key=str.lower) #ААААААААААА КАК ИЗБАВИТЬСЯ ОТ ДУБЛИКАТОВ В ИНОМ РЕГИСТРЕ
+# сейчас будем избавляться от дубликатов разного регистра
+# dict = {1: su_hor_filters, 2: rz_lyr_filters}
+# new_dict = sorted(, key=str.lower)
 print(su_hor_filters, "в этих фильтрах su_hor")
 print(rz_lyr_filters, "в этих фильтрах rz_lyr")
 
@@ -63,3 +66,21 @@ print(rz_lyr_filters, "в этих фильтрах rz_lyr")
 # print(catalog) КАКАЯ-ТО МУТЬ
 catalog = [column_obj_norm, [su_hor_filters, rz_lyr_filters]]
 print(catalog)
+
+#
+# a = input('пж введите имя объекта и названия фильтров в формате')
+# print(a)
+#
+# new_file = open('task2_data_resaved', 'w')
+
+jdn = float(input('пж введите юлианскую дату'))
+a = jdn + 32004
+b = (4*a + 3) / 146097
+c = a - (146097*b/4)
+d = (4*c + 3)/1461
+e = c - (1461*d/4)
+m = (5*e + 2)/153
+day = e - (153*m+2)/5 + 1
+month = m + 3 - 12*(m/10)
+year = 100*b + d - 4800 + (m/10)
+print(f"the date is {day} {month} {year}")
