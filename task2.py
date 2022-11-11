@@ -76,7 +76,7 @@ print("hjd:", column_hjd)
 date = []
 for j in range (0, len(column_hjd)):
     # hjd = float(input('пж введите юлианскую дату')) + 0.5
-    hjd = float(column_hjd[j])
+    hjd = float(column_hjd[j])+0.5
     jdn = int(hjd)
     time = hjd - jdn
     a = jdn + 32044
