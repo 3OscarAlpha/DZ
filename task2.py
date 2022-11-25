@@ -114,7 +114,6 @@ elif len(fiils)==3:
     f0, f1, f2 = fiils[0], fiils[1], fiils[2]
     new_file.write(f"Date\t\t\t\t HJD\t\t\t Magn in {f0}\t Magn in {f1}\t Magn in {f2}\n")
 m0, m1, m2, jd, da = [], [], [], [], []
-eins, zwei = [], []
 
 for i in range(0, len(column_obj)):
     if str(obj_name) == column_obj[i]:
@@ -137,42 +136,19 @@ for i in range(0, len(column_obj)):
             m1.append(f'\t\t')
             m2.append(column_magn[i])
 
+eins, zwei = [], []
+
 for k in range (0, len(jd)):
     min_jd = min(jd)
     ind = jd.index(min_jd)
     new_file.write(f"{da[ind]}\t {min_jd}\t {m0[ind]}\t {m1[ind]}\t {m2[ind]}\n")
-    # eins.append(min_jd)
-    # zwei.append(m0[ind])
+    eins.append(float(min_jd))
+    zwei.append(float(m0[ind]))
     del jd[ind], da[ind], m0[ind], m1[ind], m2[ind]
 
 new_file.close()
-kchh = np.array(zwei)
-pshh = np.array(eins)
-print(k)
 # mas = np.array([eins, zwei], dtype=float)
-# print(mas)
-# print(*eins, sep = "\n")
-# print(*eins, sep = "\n")
-
-#похвастаться
-# print('eins = ', eins, f'\n zwei = ', zwei)
-
-# print(len(eins), len(zwei))
-# for_mas = open(f'{obj_name}.dat', 'r')
-# long_name_for_columns_in_file_haha = for_mas.readlines()
-# eins, zwei, drei, vier = [], [], [], []
-# for line in long_name_for_columns_in_file_haha:
-#     eins.append(line.split(f" ")[2])
-#     zwei.append(line.split(f' ')[3])
-#     drei.append(line.split(f' ')[4])
-#     if "Magn in Ic" in for_mas:
-#         vier.append(line.split(f' ')[5])
-# del eins[0]
-# eins = [x.strip('\t') for x in eins]
-# print(eins,f'\n', zwei, f'\n', drei, f'\n', vier)
-# # star_mas = np.array([jd], dtype = float)
-# # print(star_mas) #
 
 
-plt.plot(pshh, kchh)
+plt.plot(eins, zwei)
 plt.show()
