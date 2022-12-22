@@ -1,3 +1,6 @@
+# пользователь вводит имя объекта и его коорд целочисл х, у. Flux рассчитывает поток от звезды и выводит его
+# pip install pyinstaller
+# pyinstaller -F -w name.py делаем файл который будет читать без питона. Можно без -F. -i и путь к иконке
 import astropy.io.fits as pyfits
 import astropy
 import matplotlib.pyplot as plt
@@ -20,6 +23,7 @@ def click():
     global scidata, fig # X=730, Y=1890
     global сoord_x, coord_y, r_of_star
     global left_x, left_y, right_x, right_y
+    global Z
     source = entr1.get() #C:/Users/3512/Downloads/Telegram Desktop/v523cas60s-001.fit
     coord_x = entr2.get()
     coord_y = entr3.get()
@@ -61,21 +65,26 @@ def click():
         canvas.draw()
         canvas.get_tk_widget().grid(column=2, row =7)
 
-    def d_plot():
-        z_temp, Z = [], []
-        i = left_y
-        while i < right_y:
-            for k in range(left_x, right_x):
-                z_temp.append(scidata[i][k]) #type = list
-            z_arr = np.asarray(z_temp, dtype=int) #type = ndarray
-            Z.append(z_arr)
-            z_temp = []
-            i = i + 1
-        Z = np.asarray(Z)
 
-        x = [i for i in range(left_x, right_x)]
-        y = [i for i in range(left_y, right_y)]
-        X, Y = np.meshgrid(x, y)
+##for graphic 3D
+###     begin
+    z_temp, Z = [], []
+    i = left_y
+    while i < right_y:
+        for k in range(left_x, right_x):
+            z_temp.append(scidata[i][k])  # type = list
+        z_arr = np.asarray(z_temp, dtype=int)  # type = ndarray
+        Z.append(z_arr)
+        z_temp = []
+        i = i + 1
+    Z = np.asarray(Z)
+
+    x = [i for i in range(left_x, right_x)]
+    y = [i for i in range(left_y, right_y)]
+    X, Y = np.meshgrid(x, y)
+#####     end
+
+    def d_plot():
         fig = plt.Figure(figsize=(5,5), dpi=70)
         # ax = plt.axes(projection='3d') #scatters
         ax = fig.add_subplot(111, projection='3d')
@@ -87,6 +96,38 @@ def click():
         canvas.draw()
         canvas.get_tk_widget().grid(column=3, row =7)
 
+    def flex():
+        summ=0
+        print(Z)
+        ot = int(r_of_star)-int(r1_back)
+        do = int(r_of_star)+int(r1_back)
+        for i in range(ot, do):
+            for k in range(ot, do):
+                summ += Z[i][k]
+
+        lblflux = Label(text=f"hahah {summ}")
+        lblflux.grid(column=2, row=12)
+
+    def zachet():
+        value = 0
+        summ=0
+        ot = int(r_of_star)-int(r1_back)
+        do = int(r_of_star)+int(r1_back)
+        for i in range(ot, do):
+            for k in range(ot, do):
+                summ += Z[i][k]
+        for i in range(0, len(Z)):
+            for k in range(0, len(Z)):
+                value += Z[i][k]
+        res = (int(value)-int(summ))/(len(Z)**2-int((r1_back)*2)**2)
+        lblzach = Label(text=f'{res}')
+        lblzach.grid(column=1, row=12)
+
+    btn2 = Button(star_window, text='Вычеты)', command = zachet)
+    btn2.grid(row=10, column=1)
+
+    btn3 = Button(star_window, text='Flux', command=flex)
+    btn3.grid(row=10, column=2)
 
     var1, var2, var3 = IntVar(), IntVar(), IntVar()
     var1.set(1)
@@ -106,6 +147,7 @@ def click():
                      variable=var3, onvalue=1, offvalue=0,
                      command=d_plot)
     c3.grid(column=3, row=6)
+
 
 
 star_window = tk.Tk()
@@ -153,6 +195,7 @@ entr6.insert(0, '6')
 
 btn = Button(star_window, text="Принять", command=click)
 btn.grid(row = 5, column = 1)
+
 
 
 star_window.mainloop()
