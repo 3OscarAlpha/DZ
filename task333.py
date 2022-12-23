@@ -23,7 +23,7 @@ def click():
     global scidata, fig # X=730, Y=1890
     global сoord_x, coord_y, r_of_star
     global left_x, left_y, right_x, right_y
-    global Z
+    global Z, exp
     source = entr1.get() #C:/Users/3512/Downloads/Telegram Desktop/v523cas60s-001.fit
     coord_x = entr2.get()
     coord_y = entr3.get()
@@ -33,12 +33,14 @@ def click():
     hdulist = pyfits.open(f"{source}")
     hdulist.info()
     scidata = hdulist[0].data
+    exp = hdulist[0].header['exptime']
+    print("exp=", exp)
     hdulist.close()
 
-    left_x = int(coord_x) - int(r_of_star)
-    right_x = int(coord_x) + int(r_of_star)
-    left_y = int(coord_y) - int(r_of_star)
-    right_y = int(coord_y) + int(r_of_star)
+    left_x = int(coord_x) - int(r2_back)
+    right_x = int(coord_x) + int(r2_back)
+    left_y = int(coord_y) - int(r2_back)
+    right_y = int(coord_y) + int(r2_back)
 
     def ver_plot():
         # damn = [row[730] for row in scidata]
@@ -69,8 +71,9 @@ def click():
 ##for graphic 3D
 ###     begin
     z_temp, Z = [], []
-    i = left_y
-    while i < right_y:
+    # i = left_y
+    # while i < right_y:
+    for i in range(left_y, right_y):
         for k in range(left_x, right_x):
             z_temp.append(scidata[i][k])  # type = list
         z_arr = np.asarray(z_temp, dtype=int)  # type = ndarray
@@ -96,34 +99,45 @@ def click():
         canvas.draw()
         canvas.get_tk_widget().grid(column=3, row =7)
 
-    def flex():
-        summ=0
-        print(Z)
-        ot = int(r_of_star)-int(r1_back)
-        do = int(r_of_star)+int(r1_back)
-        for i in range(ot, do):
-            for k in range(ot, do):
-                summ += Z[i][k]
 
-        lblflux = Label(text=f"hahah {summ}")
-        lblflux.grid(column=2, row=12)
-
-    def zachet():
-        value = 0
-        summ=0
-        ot = int(r_of_star)-int(r1_back)
-        do = int(r_of_star)+int(r1_back)
-        for i in range(ot, do):
-            for k in range(ot, do):
-                summ += Z[i][k]
+    def back_pix():
+        global circle
+        summ_maj, summ_min = 0, 0
+        length_min, length_maj = 0, 0
         for i in range(0, len(Z)):
             for k in range(0, len(Z)):
-                value += Z[i][k]
-        res = (int(value)-int(summ))/(len(Z)**2-int((r1_back)*2)**2)
-        lblzach = Label(text=f'{res}')
+                if ((int(r2_back)-int(i))**2+(int(r2_back)-int(k))**2) < int(r2_back)**2:
+                    summ_maj += Z[i][k]
+                    length_maj += 1
+
+        ot = int(r2_back)-int(r1_back)
+        do = int(r2_back)+int(r1_back)
+        for i in range(ot, do):
+            for k in range(ot, do):
+                if ((int(r2_back)-int(i))**2+(int(r2_back)-int(k))**2) < int(r1_back)**2:
+                    summ_min += Z[i][k]
+                    length_min += 1
+        circle = (summ_maj-summ_min)/(length_maj-length_min)
+        lblzach = Label(text=f'{circle}')
         lblzach.grid(column=1, row=12)
 
-    btn2 = Button(star_window, text='Вычеты)', command = zachet)
+    def flex():
+        summ_star, len_star = 0, 0
+        ot = int(r2_back)-int(r_of_star)
+        do = int(r2_back)+int(r_of_star)
+        for i in range(ot, do):
+            for k in range(ot, do):
+                if ((int(r2_back)-int(i))**2+(int(r2_back)-int(k))**2) < int(r_of_star)**2:
+                    summ_star += Z[i][k]
+                    len_star += 1
+        res = summ_star - len_star*circle
+        res_in_sec = res/exp
+        lblflux = Label(text=f"Суммарно {res}")
+        lblflux2 = Label(text=f'В секунду {res_in_sec}')
+        lblflux.grid(column=2, row=12)
+        lblflux2.grid(column=2, row=13)
+
+    btn2 = Button(star_window, text='Средний фон', command = back_pix)
     btn2.grid(row=10, column=1)
 
     btn3 = Button(star_window, text='Flux', command=flex)
@@ -152,7 +166,7 @@ def click():
 
 star_window = tk.Tk()
 star_window.title(f"Взлом мира")
-star_window.geometry('1400x800') #почему не в юнитах выдает?
+star_window.geometry('800x800') #почему не в юнитах выдает? 1400
 
 
 lbl1 = Label(text='Vvedite puuuuut')
@@ -171,13 +185,13 @@ lbl3 = Label(text='Y')
 lbl3.grid(column = 1, row = 3)
 entr3 = Entry(width = 25)
 entr3.grid(row = 3, column = 2)
-entr3.insert(0, '1891')
+entr3.insert(0, '1892')
 
 lbl4 = Label(text='R of star')
 lbl4.grid(column = 3, row = 2)
 entr4 = Entry(width = 25)
 entr4.grid(row = 2, column = 4)
-entr4.insert(0, '8')
+entr4.insert(0, '4')
 
 lbl5 = Label(text='R of back1')
 lbl5.grid(column = 3, row = 3)
@@ -189,7 +203,7 @@ lbl6 = Label(text='R of back2')
 lbl6.grid(column = 3, row = 4)
 entr6 = Entry(width = 25)
 entr6.grid(row = 4, column = 4)
-entr6.insert(0, '6')
+entr6.insert(0, '8')
 
 
 
